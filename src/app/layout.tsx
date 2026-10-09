@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   },
 };
 
-const themeScript = `try{var t=localStorage.getItem('eas-theme');if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t)}catch(e){}`;
+const themeScript = `try{var t=localStorage.getItem('eas-theme');if(t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t)}catch(e){}`;
 
 export default function RootLayout({
   children,
