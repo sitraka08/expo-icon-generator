@@ -56,14 +56,14 @@ function IconPanel() {
   const issues = collectIssues(p);
   return (
     <>
-      <Section title="Source image">
+      <Section title="Source image" defaultOpen>
         <Upload
           label="Icon image"
           path="icon.image"
           hint="PNG, JPEG or SVG · 1024×1024 recommended"
         />
       </Section>
-      <Section title="Position & scale">
+      <Section title="Position & scale" defaultOpen>
         <SliderField
           label="Scale"
           path="icon.scale"
@@ -139,7 +139,6 @@ function IconPanel() {
       <Section
         title="Compatibility"
         meta={`SDK ${p.project.sdk}`}
-        defaultOpen={issues.some((i) => i.asset === "icon" && i.sev !== "info")}
       >
         <IssueList issues={issues} onlyAsset="icon" />
         <Message kind="info">
@@ -147,7 +146,7 @@ function IconPanel() {
           flattened.
         </Message>
       </Section>
-      <Section title="Advanced" defaultOpen={false}>
+      <Section title="Advanced">
         <ResetAsset id="icon" />
       </Section>
     </>
@@ -161,7 +160,7 @@ function AdaptivePanel() {
   const issues = collectIssues(p);
   return (
     <>
-      <Section title="Foreground layer">
+      <Section title="Foreground layer" defaultOpen>
         <Upload
           label="Foreground"
           path="adaptive.fg.image"
@@ -251,9 +250,6 @@ function AdaptivePanel() {
       <Section
         title="Compatibility"
         meta={`SDK ${p.project.sdk}`}
-        defaultOpen={issues.some(
-          (i) => i.asset === "adaptive" && i.sev !== "info",
-        )}
       >
         <IssueList issues={issues} onlyAsset="adaptive" />
         <Message kind="info">
@@ -261,7 +257,7 @@ function AdaptivePanel() {
           background.
         </Message>
       </Section>
-      <Section title="Advanced" defaultOpen={false}>
+      <Section title="Advanced">
         <ResetAsset id="adaptive" />
       </Section>
     </>
@@ -276,7 +272,7 @@ function SplashPanel() {
   const sp = p.splash;
   return (
     <>
-      <Section title="Logo">
+      <Section title="Logo" defaultOpen>
         <Upload
           label="Logo or image"
           path="splash.image"
@@ -329,7 +325,7 @@ function SplashPanel() {
           <ColorField label="Dark background" path="splash.darkBg" />
         )}
       </Section>
-      <Section title="Platform options" defaultOpen={false}>
+      <Section title="Platform options">
         <Field
           label="Resize mode"
           htmlFor="resize"
@@ -374,9 +370,6 @@ function SplashPanel() {
       <Section
         title="Compatibility"
         meta={`SDK ${p.project.sdk}`}
-        defaultOpen={issues.some(
-          (i) => i.asset === "splash" && i.sev !== "info",
-        )}
       >
         <IssueList issues={issues} onlyAsset="splash" />
         <Message kind="info">
@@ -384,7 +377,7 @@ function SplashPanel() {
           result can differ slightly from the simulation.
         </Message>
       </Section>
-      <Section title="Advanced" defaultOpen={false}>
+      <Section title="Advanced">
         <ResetAsset id="splash" />
       </Section>
     </>
@@ -437,6 +430,17 @@ export function Panel() {
           <SplashPanel />
         )}
       </div>
+      <footer className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
+        About me ·{" "}
+        <a
+          href="https://sitraka.vercel.app"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-foreground underline underline-offset-2 hover:text-brand"
+        >
+          sitraka.vercel.app
+        </a>
+      </footer>
     </aside>
   );
 }

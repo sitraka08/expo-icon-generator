@@ -26,7 +26,7 @@ type Gate = { ok: boolean; reason: string };
 export function Section({
   title,
   meta,
-  defaultOpen = true,
+  defaultOpen = false,
   children,
 }: {
   title: string;
