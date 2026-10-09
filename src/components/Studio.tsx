@@ -1,12 +1,13 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { studio, useStudio } from '@/lib/store';
-import { Sprite, Icon } from './Icon';
+import { Icon } from './Icon';
 import { Topbar } from './Topbar';
 import { Panel } from './Panel';
 import { Workspace } from './Workspace';
 import { ExportDialog } from './ExportDialog';
-import { Toasts } from './Toasts';
+import { Toaster } from './ui/sonner';
+import { TooltipProvider } from './ui/tooltip';
 import { openExport } from './exportBus';
 
 const PRIMARY = { icon: 'icon.image', adaptive: 'adaptive.fg.image', splash: 'splash.image' } as const;
@@ -49,8 +50,7 @@ export function Studio() {
   }, []);
 
   return (
-    <>
-      <Sprite />
+    <TooltipProvider>
       <a className="skip" href="#panel">Skip to configuration</a>
       <Topbar onExport={() => openExport('zip')} />
       <main className="app" data-mobile={ui.mobile} aria-busy={!hydrated}>
@@ -67,7 +67,7 @@ export function Studio() {
         <button type="button" className={ui.mobile === 'preview' ? 'on' : ''} onClick={() => studio.patchUi({ mobile: 'preview' })}>Preview</button>
       </nav>
       <ExportDialog />
-      <Toasts />
-    </>
+      <Toaster />
+    </TooltipProvider>
   );
 }

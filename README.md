@@ -2,7 +2,7 @@
 
 Visual workspace to create, preview and export **app icons**, **Android adaptive icons** and **splash screens** for Expo / React Native apps. Everything runs in the browser — no account, no upload.
 
-- **Next.js (App Router) + React + TypeScript**, no UI/runtime dependencies beyond that.
+- **Next.js (App Router) + React + TypeScript**, UI built on **shadcn/ui** patterns (Radix primitives + Tailwind v4 + lucide icons + Sonner toasts) with subtle motion (dialog, menus, collapsibles, tabs). Reduced-motion is respected.
 - Design charter inspired by Welcome to the Jungle (signature yellow `#FFCD00`, near-black ink, warm paper canvas, pill actions); **Google Sans** (UI) + **Google Sans Code** (technical text); light/dark toggle.
 - Live preview in Android/iOS device mockups, adaptive-icon masks and exploded layers, safe-area guides.
 - SDK-aware generation: `src/lib/sdk.ts` is the single source of truth for what each Expo SDK supports. UI and generators only read its `rules`.

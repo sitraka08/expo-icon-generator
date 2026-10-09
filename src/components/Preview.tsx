@@ -8,6 +8,7 @@ import { drawSplash, mk, paintMasked, renderAdaptiveBg, renderAdaptiveFg, render
 import { colorOr } from '@/lib/util';
 import { Icon } from './Icon';
 import { IssueList, Message } from './controls';
+import { Button } from './ui/button';
 
 export const MASKS: { v: Mask; label: string }[] = [
   { v: 'circle', label: 'Circle' }, { v: 'squircle', label: 'Squircle' }, { v: 'rounded', label: 'Rounded' }, { v: 'square', label: 'Square' }, { v: 'teardrop', label: 'Teardrop' },
@@ -131,9 +132,9 @@ function AdaptiveGuide() {
 function SafeToggle() {
   const { ui } = useStudio();
   return (
-    <button type="button" className="btn sm" aria-pressed={ui.safe} onClick={() => studio.patchUi({ safe: !ui.safe })} style={ui.safe ? { background: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-ink)' } : undefined}>
+    <Button variant={ui.safe ? 'brand' : 'outline'} aria-pressed={ui.safe} onClick={() => studio.patchUi({ safe: !ui.safe })}>
       <Icon name="scan" size="sm" />Safe area
-    </button>
+    </Button>
   );
 }
 
@@ -367,8 +368,8 @@ function EmptyState({ asset }: { asset: AssetId }) {
       <h2>{err ? 'This image can’t be used' : copy[asset][0]}</h2>
       <p role={err ? 'alert' : undefined}>{err ?? copy[asset][1]}</p>
       <div className="row">
-        <button className="btn primary" type="button" onClick={() => ref.current?.click()}><Icon name="upload" size="sm" />{err ? 'Choose another file' : 'Upload image'}</button>
-        <button className="btn" type="button" onClick={() => studio.useSample(path)}><Icon name="sparkle" size="sm" />Try with a sample</button>
+        <Button variant="default" onClick={() => ref.current?.click()}><Icon name="upload" size="sm" />{err ? 'Choose another file' : 'Upload image'}</Button>
+        <Button onClick={() => studio.useSample(path)}><Icon name="sparkle" size="sm" />Try with a sample</Button>
       </div>
       <input ref={ref} className="sr-only" type="file" tabIndex={-1} aria-label="Upload image" accept="image/png,image/jpeg,image/svg+xml,.svg" onChange={(e) => { const f = e.target.files?.[0]; if (f) studio.upload(f, path); e.target.value = ''; }} />
       <span className="hint">You can also drop a file anywhere on this page.</span>
@@ -388,8 +389,8 @@ export function PreviewView() {
           <h2>Adaptive icons are Android-only</h2>
           <p>iOS uses the single App icon instead. Switch to Android to preview the layers, or edit the App icon for iOS.</p>
           <div className="row">
-            <button className="btn primary" type="button" onClick={() => studio.patchUi({ platform: 'android' })}>Preview on Android</button>
-            <button className="btn" type="button" onClick={() => studio.patchUi({ asset: 'icon' })}>Open App icon</button>
+            <Button variant="default" onClick={() => studio.patchUi({ platform: 'android' })}>Preview on Android</Button>
+            <Button onClick={() => studio.patchUi({ asset: 'icon' })}>Open App icon</Button>
           </div>
         </div>
       );

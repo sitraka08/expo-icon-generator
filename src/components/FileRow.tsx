@@ -5,6 +5,9 @@ import { pathOf } from '@/lib/assets';
 import { fileBlob, download } from '@/lib/export';
 import type { AssetFile } from '@/lib/types';
 import { Icon } from './Icon';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Tip } from './ui/tooltip';
 
 export function FileRow({ f, compact, editable }: { f: AssetFile; compact?: boolean; editable?: boolean }) {
   const { p, tick } = useStudio();
@@ -34,15 +37,17 @@ export function FileRow({ f, compact, editable }: { f: AssetFile; compact?: bool
         <div className="nm"><span className="mono">{f.name}</span><span className="dims">{f.format} · {f.w}×{f.h}</span></div>
         {editable ? (
           <>
-            <input className={`path ${bad ? 'invalid' : ''}`} type="text" spellCheck={false} aria-label={`Destination path for ${f.name}`} aria-invalid={bad} value={path}
+            <Input className="mt-1 h-7 font-mono text-xs" type="text" spellCheck={false} aria-label={`Destination path for ${f.name}`} aria-invalid={bad} value={path}
               onChange={(e) => studio.set(`paths.${f.id}`, e.target.value, 'path:' + f.id)} />
             <div className="note">{bad ? 'Use a path like ./assets/name.png' : f.note}</div>
           </>
         ) : <div className="path-ro" title={path}>{path}</div>}
       </div>
-      <button type="button" className={compact ? 'icon-btn' : 'btn sm'} aria-label={`Download ${f.name}`} data-tip={compact ? 'Download' : undefined} disabled={busy} onClick={get}>
-        <Icon name="download" size="sm" />{compact ? null : 'Download'}
-      </button>
+      {compact ? (
+        <Tip label="Download"><Button variant="ghost" size="icon" aria-label={`Download ${f.name}`} disabled={busy} onClick={get}><Icon name="download" size="sm" /></Button></Tip>
+      ) : (
+        <Button size="sm" aria-label={`Download ${f.name}`} disabled={busy} onClick={get}><Icon name="download" size="sm" />Download</Button>
+      )}
     </div>
   );
 }

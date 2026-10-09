@@ -2,6 +2,7 @@
 import { studio, useStudio } from '@/lib/store';
 import { allFiles, ASSETS, collectIssues } from '@/lib/assets';
 import { Icon } from './Icon';
+import { Button } from './ui/button';
 import { FileRow } from './FileRow';
 import { IssueList, Message } from './controls';
 import { openExport } from './exportBus';
@@ -17,7 +18,7 @@ export function FilesView() {
           <strong style={{ fontSize: 15 }}>Generated files</strong>
           <div className="hint">{files.length} file{files.length === 1 ? '' : 's'} · paths are editable and relative to your project root</div>
         </div>
-        <button type="button" className="btn primary" style={{ marginLeft: 'auto' }} onClick={() => openExport('zip')} disabled={!files.length}><Icon name="package" size="sm" />Export ZIP</button>
+        <Button className="ml-auto" onClick={() => openExport('zip')} disabled={!files.length}><Icon name="package" size="sm" />Export ZIP</Button>
       </div>
       {!files.length && <Message kind="info">No files yet. Add an image to the App icon, Adaptive icon or Splash screen to generate assets.</Message>}
       {ASSETS.map((a) => {
