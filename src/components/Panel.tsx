@@ -4,6 +4,9 @@ import { ASSETS, collectIssues, assetDef } from '@/lib/assets';
 import { rulesFor } from '@/lib/sdk';
 import type { AssetId } from '@/lib/types';
 import { ColorField, Field, IssueList, Section, Segmented, SdkTag, SliderField, Switch, Upload, Message } from './controls';
+import { Button } from './ui/button';
+import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Icon, type IconName } from './Icon';
 
 const TAB_ICON: Record<AssetId, IconName> = { icon: 'app', adaptive: 'layers', splash: 'phone' };
@@ -11,9 +14,9 @@ const TAB_LABEL: Record<AssetId, string> = { icon: 'App icon', adaptive: 'Adapti
 
 function ResetAsset({ id }: { id: AssetId }) {
   return (
-    <button type="button" className="btn sm" onClick={() => studio.resetAsset(id)} style={{ justifySelf: 'start' }}>
+    <Button size="sm" className="justify-self-start" onClick={() => studio.resetAsset(id)}>
       <Icon name="reset" size="sm" />Reset {assetDef(id).label.toLowerCase()}
-    </button>
+    </Button>
   );
 }
 
@@ -30,9 +33,9 @@ function IconPanel() {
         <SliderField label="Scale" path="icon.scale" min={10} max={200} unit="%" hint="100% fits the longest side to the canvas." />
         <SliderField label="Horizontal offset" path="icon.x" min={-50} max={50} unit="%" />
         <SliderField label="Vertical offset" path="icon.y" min={-50} max={50} unit="%" />
-        <button type="button" className="btn sm" style={{ justifySelf: 'start' }} onClick={() => studio.setMany([['icon.scale', 100], ['icon.x', 0], ['icon.y', 0]], 'icon:reset-pos')}>
+        <Button size="sm" className="justify-self-start" onClick={() => studio.setMany([['icon.scale', 100], ['icon.x', 0], ['icon.y', 0]], 'icon:reset-pos')}>
           <Icon name="reset" size="sm" />Reset position & scale
-        </button>
+        </Button>
       </Section>
       <Section title="Background">
         <ColorField label="Background colour" path="icon.bg" hint="Fills transparent areas. iOS icons cannot have an alpha channel." />
@@ -43,7 +46,7 @@ function IconPanel() {
           gate={{ ok: r.iosIconVariants, reason: `Dark icon variants are not available in SDK ${p.project.sdk}. Your choice is kept; switch to SDK 54 or later to export it.` }}
           hint="Exports a second icon used when iOS is in dark mode." />
         {p.icon.darkEnabled && r.iosIconVariants && <ColorField label="Dark background" path="icon.darkBg" />}
-        {!r.iosIconVariants && p.icon.darkEnabled && <button type="button" className="btn sm" style={{ justifySelf: 'start' }} onClick={() => studio.setSdk('54')}>Use SDK 54</button>}
+        {!r.iosIconVariants && p.icon.darkEnabled && <Button size="sm" className="justify-self-start" onClick={() => studio.setSdk('54')}>Use SDK 54</Button>}
       </Section>
       <Section title="Compatibility" meta={`SDK ${p.project.sdk}`} defaultOpen={issues.some((i) => i.asset === 'icon' && i.sev !== 'info')}>
         <IssueList issues={issues} onlyAsset="icon" />
@@ -112,10 +115,13 @@ function SplashPanel() {
       </Section>
       <Section title="Platform options" defaultOpen={false}>
         <Field label="Resize mode" htmlFor="resize" hint="How the image fits the screen.">
-          <select id="resize" value={sp.resizeMode} onChange={(e) => studio.set('splash.resizeMode', e.target.value)}>
-            {!r.splashResizeModes.some((m) => m.value === sp.resizeMode) && <option value={sp.resizeMode}>{sp.resizeMode} (unavailable)</option>}
-            {r.splashResizeModes.map((m) => <option key={m.value} value={m.value}>{m.label}{m.deprecated ? ' — deprecated' : ''}</option>)}
-          </select>
+          <Select value={sp.resizeMode} onValueChange={(v) => studio.set('splash.resizeMode', v)}>
+            <SelectTrigger id="resize"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {!r.splashResizeModes.some((m) => m.value === sp.resizeMode) && <SelectItem value={sp.resizeMode}>{sp.resizeMode} (unavailable)</SelectItem>}
+              {r.splashResizeModes.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}{m.deprecated ? ' — deprecated' : ''}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </Field>
         <Message kind="info">Configured through {plugin ? <><span className="mono">expo-splash-screen</span> plugin</> : <>the top-level <span className="mono">splash</span> key</>} for SDK {p.project.sdk}.</Message>
       </Section>
@@ -132,17 +138,19 @@ export function Panel() {
   const { p, ui } = useStudio();
   return (
     <aside className="panel" id="panel" aria-label="Configuration">
-      <div className="asset-tabs" role="tablist" aria-label="Asset">
-        {ASSETS.map((a) => (
-          <button key={a.id} role="tab" type="button" className="asset-tab" aria-selected={ui.asset === a.id} id={`tab-${a.id}`} aria-controls="panelBody"
-            onClick={() => studio.patchUi({ asset: a.id })}>
-            <Icon name={TAB_ICON[a.id]} />
-            {TAB_LABEL[a.id]}
-            {a.ready(p) && <span className="dot" title="Ready to export" />}
-          </button>
-        ))}
-      </div>
-      <div className="panel-body" id="panelBody" role="tabpanel" aria-labelledby={`tab-${ui.asset}`} key={ui.asset}>
+      <Tabs value={ui.asset} onValueChange={(v) => studio.patchUi({ asset: v as AssetId })} className="border-b border-border p-3">
+        <TabsList className="grid w-full grid-cols-3 gap-1 rounded-lg bg-secondary p-1" aria-label="Asset">
+          {ASSETS.map((a) => (
+            <TabsTrigger key={a.id} value={a.id}
+              className="relative flex-col gap-1 rounded-md px-1 pb-1.5 pt-2 text-xs transition-all duration-200 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-[var(--lift)] data-[state=inactive]:hover:text-foreground">
+              <span className="grid size-6 place-items-center rounded-[5px] transition-colors duration-200 group-data-[state=active]:bg-brand [[data-state=active]_&]:bg-brand [[data-state=active]_&]:text-brand-foreground"><Icon name={TAB_ICON[a.id]} size="sm" /></span>
+              {TAB_LABEL[a.id]}
+              {a.ready(p) && <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-ok" title="Ready to export" />}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+      <div className="panel-body animate-in fade-in-0 slide-in-from-bottom-1 duration-200" id="panelBody" key={ui.asset}>
         {ui.asset === 'icon' ? <IconPanel /> : ui.asset === 'adaptive' ? <AdaptivePanel /> : <SplashPanel />}
       </div>
     </aside>

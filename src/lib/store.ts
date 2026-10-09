@@ -1,5 +1,6 @@
 'use client';
 import { useSyncExternalStore } from 'react';
+import { toast as sonner } from 'sonner';
 import type { AssetId, ImageRef, Project, Ui } from './types';
 import { clone, getPath, setPath, slug } from './util';
 import { defaultProject, defaultUi } from './defaults';
@@ -7,7 +8,6 @@ import { diffSDK, sdkById } from './sdk';
 import { readImage, ImageError, sampleImage, setImageLoadHandler } from './images';
 
 export type ToastKind = 'success' | 'warn' | 'error' | 'info';
-export interface Toast { id: number; kind: ToastKind; title: string; body?: string }
 type SaveState = 'idle' | 'saving' | 'saved' | 'partial' | 'error';
 
 export interface Snapshot {
@@ -18,7 +18,6 @@ export interface Snapshot {
   canUndo: boolean;
   canRedo: boolean;
   errors: Record<string, string>;
-  toasts: Toast[];
   hydrated: boolean;
   tick: number; // bumps when an image finishes decoding so canvases repaint
 }
@@ -29,7 +28,6 @@ let ui: Ui = defaultUi();
 let theme: 'light' | 'dark' = 'light';
 let save: SaveState = 'idle';
 let errors: Record<string, string> = {};
-let toasts: Toast[] = [];
 let hydrated = false;
 let tick = 0;
 let past: Project[] = [];
@@ -37,12 +35,11 @@ let future: Project[] = [];
 let last: Project = p;
 let lastKey: string | null = null;
 let lastT = 0;
-let toastId = 1;
 let snap: Snapshot;
 const subs = new Set<() => void>();
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
 
-const build = (): Snapshot => ({ p, ui, theme, save, canUndo: past.length > 0, canRedo: future.length > 0, errors, toasts, hydrated, tick });
+const build = (): Snapshot => ({ p, ui, theme, save, canUndo: past.length > 0, canRedo: future.length > 0, errors, hydrated, tick });
 const emit = () => { snap = build(); subs.forEach((f) => f()); };
 snap = build();
 
@@ -208,12 +205,12 @@ export const studio = {
   newProject() { studio.resetAll('my-expo-app'); studio.toast('success', 'New project', 'Started from defaults.'); },
 
   toast(kind: ToastKind, title: string, body?: string) {
-    const id = toastId++;
-    toasts = [...toasts, { id, kind, title, body }];
-    emit();
-    setTimeout(() => studio.dismiss(id), kind === 'error' || kind === 'warn' ? 9000 : 4500);
+    const opts = { description: body?.replace(/`/g, ''), duration: kind === 'error' || kind === 'warn' ? 9000 : 4000 };
+    if (kind === 'success') sonner.success(title, opts);
+    else if (kind === 'error') sonner.error(title, opts);
+    else if (kind === 'warn') sonner.warning(title, opts);
+    else sonner.info(title, opts);
   },
-  dismiss(id: number) { toasts = toasts.filter((t) => t.id !== id); emit(); },
   slug,
 };
 

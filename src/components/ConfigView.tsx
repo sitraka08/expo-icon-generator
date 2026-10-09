@@ -6,6 +6,8 @@ import { sdkById } from '@/lib/sdk';
 import { Icon } from './Icon';
 import { IssueList, Message, Segmented } from './controls';
 import { FileRow } from './FileRow';
+import { Button } from './ui/button';
+import { cn } from '@/lib/cn';
 import type { AssetId } from '@/lib/types';
 
 export async function copyText(text: string) {
@@ -38,14 +40,18 @@ export function Code({ json }: { json: string }) {
   );
 }
 
-export function CopyButton({ text, label = 'Copy', className = 'btn sm' }: { text: string; label?: string; className?: string }) {
+export function CopyButton({ text, label = 'Copy', variant = 'outline', size = 'sm' }: { text: string; label?: string; variant?: 'outline' | 'default'; size?: 'sm' | 'default' }) {
   const [done, setDone] = useState(false);
   const go = async () => {
     const ok = await copyText(text);
     if (ok) { setDone(true); studio.toast('success', 'Configuration copied', 'Paste it into your app.json or app.config.json.'); setTimeout(() => setDone(false), 1800); }
     else studio.toast('error', 'Copy failed', 'Your browser blocked clipboard access. Select the text and copy it manually.');
   };
-  return <button type="button" className={className} onClick={go} aria-live="polite"><Icon name={done ? 'check' : 'copy'} size="sm" />{done ? 'Copied' : label}</button>;
+  return (
+    <Button variant={variant} size={size} onClick={go} aria-live="polite" className={cn('min-w-[88px]', done && 'border-ok text-ok')}>
+      <span key={String(done)} className="inline-flex animate-in items-center gap-1.5 fade-in-0 zoom-in-90 duration-200"><Icon name={done ? 'check' : 'copy'} size="sm" />{done ? 'Copied' : label}</span>
+    </Button>
+  );
 }
 
 export function ConfigView() {
@@ -80,7 +86,7 @@ export function ConfigView() {
           <h3>Generated files <span className="right hint">{files.length}</span></h3>
           {files.length ? files.map((f) => <FileRow key={f.id} f={f} compact />) : <span className="hint">None yet.</span>}
         </div>
-        <button type="button" className="btn" onClick={() => studio.patchUi({ view: 'preview' })}><Icon name="phone" size="sm" />Back to visual editor</button>
+        <Button onClick={() => studio.patchUi({ view: 'preview' })}><Icon name="phone" size="sm" />Back to visual editor</Button>
       </div>
     </div>
   );
