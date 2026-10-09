@@ -156,11 +156,7 @@ export const studio = {
     try {
       const t = localStorage.getItem("eas-theme");
       theme =
-        t === "dark" || t === "light"
-          ? t
-          : matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
+        t === "dark" || t === "light" ? t : "light";
       const raw = localStorage.getItem(KEY);
       if (raw) {
         const j = JSON.parse(raw);
